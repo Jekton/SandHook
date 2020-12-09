@@ -105,12 +105,14 @@ public class SandHookMethodResolver {
 
     // may 6.0
     private static void checkSupportForArtMethodId() throws Exception {
+        // FIXME Jekton: 华为的 Android10 Executable 类只有一个 artMethod 字段
         dexMethodIndexField = getField(Method.class, "dexMethodIndex");
         dexMethodIndex = (int) dexMethodIndexField.get(testMethod);
         dexCacheField = getField(Class.class, "dexCache");
         Object dexCache = dexCacheField.get(testMethod.getDeclaringClass());
         resolvedMethodsField = getField(dexCache.getClass(), "resolvedMethods");
         Object resolvedMethods = resolvedMethodsField.get(dexCache);
+        // Jekton: >= Android7 时，DexCache::resolvedMethods 是一个 long，6.0 的时候是 Object
         if (resolvedMethods instanceof Long) {
             canResolvedInJava = false;
             resolvedMethodsAddress = (long) resolvedMethods;

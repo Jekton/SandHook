@@ -63,6 +63,10 @@ extern "C" {
 
         if (BYTE_POINT == 8) {
             if (SDK_INT >= ANDROID_Q) {
+                // Jekton: 非 root 机器读不了这个文件，真的是这个路径？
+                // Whale 用的 /apex/com.android.runtime/lib64/libart.so
+                //      >= Android7 以后不是直接打开文件，而是通过搜索 /proc/self/maps 来查找的，所以这里
+                //      用 /lib64/libart.so 也能找到 so
                 art_lib_path = "/lib64/libart.so";
                 jit_lib_path = "/lib64/libart-compiler.so";
             } else {
@@ -83,6 +87,10 @@ extern "C" {
         if (SDK_INT >= ANDROID_N) {
             globalJitCompileHandlerAddr = reinterpret_cast<art::jit::JitCompiler **>(getSymCompat(art_lib_path, "_ZN3art3jit3Jit20jit_compiler_handle_E"));
             if (SDK_INT >= ANDROID_Q) {
+                // Jekton:
+                // bool jit_compile_method(
+                //    void* handle, ArtMethod* method, Thread* self, bool baseline, bool osr)
+                //    REQUIRES_SHARED(Locks::mutator_lock_)
                 jitCompileMethodQ = reinterpret_cast<bool (*)(void *, void *, void *, bool,
                                                          bool)>(getSymCompat(jit_lib_path, "jit_compile_method"));
             } else {

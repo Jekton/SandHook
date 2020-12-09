@@ -263,12 +263,16 @@ public class SandHook {
             try {
                 loadArtMethod();
                 Field fieldAccessFlags = getField(artMethodClass, "accessFlags");
+                // Jekton: ArtMethod 的 accessFlag 字段
                 testAccessFlag = (int) fieldAccessFlags.get(testOffsetArtMethod1);
             } catch (Exception e) {
             }
         } else {
             try {
                 Field fieldAccessFlags = getField(Method.class, "accessFlags");
+                // Jekton: Method 的 accessFlag 字段
+                // 实际上字段在 AbstractMethod (< Android8)
+                //            Executable (>= Android8)
                 testAccessFlag = (int) fieldAccessFlags.get(testOffsetMethod1);
             } catch (Exception e) {
             }
